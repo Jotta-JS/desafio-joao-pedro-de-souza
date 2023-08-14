@@ -13,19 +13,18 @@ class CaixaDaLanchonete {
         //Cardápio
         const cardapio = ['cafe','chantily','suco','sanduiche','queijo','salgado','combo1','combo2']
         
-        //Armazena todos os pedidos como objetos em um array
+        //Armazena todos os pedidos como objetos
         const todosOsPedidos = []
 
         //Fazendo a conversão de string em objetos e verificando se o pedido existe
         for(let item of itens){
                 const novoItem = item.split(',')
-
+                //separando produto da quantidade e passando para objeto
                 const pedido = {
                     item: novoItem[0].toLowerCase(),
                     quantidade: parseInt(novoItem[1])
                 }
-                console.log(pedido)
-                //Excutando funções de regra de negócio
+                //Verificando existência do item e quantidade válida
                 if(comidaEstaNoCardapio(cardapio,pedido.item) == true){
                     if(quantidadeOk(pedido.quantidade) == true){ 
                         todosOsPedidos.push(pedido)
@@ -35,22 +34,23 @@ class CaixaDaLanchonete {
                     return "Item inválido!"
                 }
         }
-
+        //Total de todos os pedidos
         let total = 0
-
         //Verificando os pedidos extras
         for(let pedido of todosOsPedidos){
             if(pedido.item == 'chantily' || pedido.item == 'queijo'){
+                //Verificando se os respectivos itens principais dos extras foram pedidos
                 if(principalDoExtraExiste(todosOsPedidos, pedido.item) == false){
                     return "Item extra não pode ser pedido sem o principal"
                 }
+
             }
-                       
+            //Armazenando valor dos pedidos no total            
             total += precoDoPedido(pedido.item) * pedido.quantidade 
         }
-
+        //Aplicando desconto ou taxa
         total = totalComDescontoOuTaxa(metodoDePagamento,total)
-
+        //Valor final como string formatada
         return formatarTotal(total)
     }
 
@@ -67,11 +67,11 @@ function metodoDePagamentoOk(metodoDePagamento){
 function comidaEstaNoCardapio(cardapio,nomeDoPedido){
     return cardapio.includes(nomeDoPedido)
 }
-//A quantidade de pedidos é maior que 0 ?
+//Quantidade solicitada é válida?
 function quantidadeOk(quantidade){
     return quantidade > 0
 }
-
+//Verificando se dentro dos pedidos existe o principal do extra
 function principalDoExtraExiste(todosOsPedidos,extra){
     const nomeDosPedidos = []
 
@@ -85,7 +85,7 @@ function principalDoExtraExiste(todosOsPedidos,extra){
         return nomeDosPedidos.includes('sanduiche')            
     }
 }
-
+//Calculando o desconto ou taxa e aplicando no total
 function totalComDescontoOuTaxa(metodoDePagamento,total){
     if(metodoDePagamento == 'credito'){
         return total + (total * 0.03)
@@ -95,7 +95,7 @@ function totalComDescontoOuTaxa(metodoDePagamento,total){
         return total
     }
 }
-
+//Retorna o valor do item com base em seu codigo
 function precoDoPedido(pedido){
     switch(pedido){
         case 'cafe': return 3.00
@@ -108,16 +108,16 @@ function precoDoPedido(pedido){
         case 'combo2': return 7.50
     }
 }
-
+//Passando o resultado Float em uma String com formato "R$ 00,00"
 function formatarTotal(total){
     const totalFormatado = `${total.toFixed(2)}`.replace('.',',')
 
     return `R$ ${totalFormatado}`
 }
 
-//TESTE
+//TESTE PESSOAL.
 const result = new CaixaDaLanchonete()
-    console.log(result.calcularValorDaCompra('dinheiro',['cafe,1']))
+    console.log(result.calcularValorDaCompra('dinheiro',['cafe,10','chantily,20']))
 
 //EXPORT
 export { CaixaDaLanchonete };
